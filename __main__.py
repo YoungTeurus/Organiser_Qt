@@ -1,6 +1,6 @@
 import sys  # sys нужен для передачи argv в QApplication
 from PyQt5 import QtWidgets
-from PyQt5.QtGui import QIcon, QStandardItemModel, QStandardItem
+from PyQt5.QtGui import QIcon
 
 import organaiser_test2
 from Dialogs import AddTaskDialog, QDialog, AddNoteDialog, EditNoteDialog
@@ -16,7 +16,18 @@ data = {
             "title": "My title",
             "text": "My text"
         },
-    ]
+    ],
+    "schedule": {
+        "Понедельник": [
+            {"number": 1, "name": "Математика", "type": "always", "teacher": "prepod1", "cabinet": "315"},
+            {"number": 2, "name": "Физика практика", "type": "odd", "teacher": "prepod2", "cabinet": "215"},
+            {"number": 2, "name": "Физика лекция", "type": "even", "teacher": "prepod2", "cabinet": "115"},
+        ],
+        "Вторник": [],
+        "Среда": [],
+        "Четверг": [],
+        "Пятница": []
+    }
 }
 
 
@@ -54,11 +65,12 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
         add_note_dialog.setModal(True)
         if add_note_dialog.exec() == QDialog.Accepted:
             data["notes"].append(dict(
-                title = str(add_note_dialog.title_line.text()),
-                text = str(add_note_dialog.note_text.toPlainText())
+                title=str(add_note_dialog.title_line.text()),
+                text=str(add_note_dialog.note_text.toPlainText())
             ))
             # self.notes_list.addItem(str(add_note_dialog.title_line.text()))
             self.update_notes()
+
     def update_notes(self):
         """
         Обновляет список записок, подгружая их из data.
@@ -70,9 +82,8 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
     def edit_note(self):
         """
         Запуск диалога изменения заметки
-        :return:
         """
-        print("row {}".format(self.notes_list.currentRow()))
+        # print("row {}".format(self.notes_list.currentRow()))
         edit_note_dialog = EditNoteDialog()
 
         # Установка заголовка и текста заметки
@@ -81,11 +92,18 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
         edit_note_dialog.note_text.setText(note_to_edit["text"])
 
         edit_note_dialog.setModal(True)
+        edit_note_dialog.start_input()  # Начинаем реагировать на события с данного момента
         if (state := edit_note_dialog.exec()) == "save":
-            print("Wow!")
+            note_to_edit["title"] = str(edit_note_dialog.title_line.text())
+            note_to_edit["text"] = str(edit_note_dialog.note_text.toPlainText())
         elif state == "delete":
-            print("BURN")
+            data["notes"].remove(note_to_edit)
+        elif state == "cancel":
+            return
+        self.update_notes()
 
+    def update_schedule(self):
+        pass
 
 
 def main():
