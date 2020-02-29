@@ -27,12 +27,61 @@ data = {
             {"number": "2", "time": "9.45-11.20", "name": "Физика лекция", "type": "even", "teacher": "prepod2",
              "cabinet": "115"},
         ],
-        "Вторник": [],
-        "Среда": [],
-        "Четверг": [],
-        "Пятница": [],
-        "Суббота": []
-    }
+        "Вторник": [{"number": "1", "time": "8.00-9.35", "name": "Математика", "type": "always", "teacher": "prepod1",
+                     "cabinet": "315"},
+                    {"number": "2", "time": "9.45-11.20", "name": "Физика практика", "type": "odd",
+                     "teacher": "prepod2",
+                     "cabinet": "215"},
+                    {"number": "2", "time": "9.45-11.20", "name": "Физика лекция", "type": "even", "teacher": "prepod2",
+                     "cabinet": "115"},
+                    ],
+        "Среда": [{"number": "1", "time": "8.00-9.35", "name": "Математика", "type": "always", "teacher": "prepod1",
+                   "cabinet": "315"},
+                  {"number": "2", "time": "9.45-11.20", "name": "Физика практика", "type": "odd",
+                   "teacher": "prepod2",
+                   "cabinet": "215"},
+                  {"number": "2", "time": "9.45-11.20", "name": "Физика лекция", "type": "even", "teacher": "prepod2",
+                   "cabinet": "115"},
+                  ],
+        "Четверг": [{"number": "1", "time": "8.00-9.35", "name": "Математика", "type": "always", "teacher": "prepod1",
+                     "cabinet": "315"},
+                    {"number": "2", "time": "9.45-11.20", "name": "Физика практика", "type": "odd",
+                     "teacher": "prepod2",
+                     "cabinet": "215"},
+                    {"number": "2", "time": "9.45-11.20", "name": "Физика лекция", "type": "even", "teacher": "prepod2",
+                     "cabinet": "115"},
+                    ],
+        "Пятница": [{"number": "1", "time": "8.00-9.35", "name": "Математика", "type": "always", "teacher": "prepod1",
+                     "cabinet": "315"},
+                    {"number": "2", "time": "9.45-11.20", "name": "Физика практика", "type": "odd",
+                     "teacher": "prepod2",
+                     "cabinet": "215"},
+                    {"number": "2", "time": "9.45-11.20", "name": "Физика лекция", "type": "even", "teacher": "prepod2",
+                     "cabinet": "115"},
+                    ],
+        "Суббота": [{"number": "1", "time": "8.00-9.35", "name": "Математика", "type": "always", "teacher": "prepod1",
+                     "cabinet": "315"},
+                    {"number": "2", "time": "9.45-11.20", "name": "Физика практика", "type": "odd",
+                     "teacher": "prepod2",
+                     "cabinet": "215"},
+                    {"number": "2", "time": "9.45-11.20", "name": "Физика лекция", "type": "even", "teacher": "prepod2",
+                     "cabinet": "115"},
+                    ]
+    },
+    "tasks": [
+        {
+            "title": "Rgr po VSEMU",
+            "date": "3.03.2020",
+            "done": False,
+            "img_id": 1
+        },
+        {
+            "title": "Priyti na hackaton",
+            "date": "28.02.2020",
+            "done": True,
+            "img_id": 2
+        }
+    ]
 }
 days = ("Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота")
 
@@ -46,22 +95,24 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
         self.add_task_button.clicked.connect(self.add_task)
         self.add_note_button.clicked.connect(self.add_note)
         self.notes_list.doubleClicked.connect(self.edit_note)
-        self.update_notes()
-        self.setup_schedule()
+        self.update_notes()  # Обновляем список заметок (загружаем начальный вид)
+        self.setup_schedule()  # Задаём начальный вид расписанию
+        self.update_tasks()  # Обновляем список задач (загружаем начальный вид)
+        self.delete_task_button.clicked.connect(lambda: print(data["tasks"]))
 
     def add_task(self):
         """
-        Добавляет задачу в список задач.
+        Добавляет задачу в data.
         """
         add_task_message_box = AddTaskDialog()
         add_task_message_box.setModal(True)
-        if (add_task_message_box.exec() == QDialog.Accepted):
+        if add_task_message_box.exec() == QDialog.Accepted:
             task_finded = False
             for i in range(0, self.tasks_list.count()):
                 item = self.tasks_list.itemWidget(
                     self.tasks_list.item(i))  # получаем виджет из возвращенного QlistWidgetItem
 
-                if item.get_data() == add_task_message_box.task_data.text():
+                if item.get_data() == add_task_message_box.task_date.text():
                     e = item
                     task_finded = True
                     break
@@ -70,7 +121,41 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
             else:
                 e = TaskElemBox()
                 e.add_elem(QIcon("icon.png"), add_task_message_box.task_text.text(), False)
-                e.set_data(add_task_message_box.task_data.text())
+                e.set_data(add_task_message_box.task_date.text())
+
+                item = QListWidgetItem(self.tasks_list)
+                item.setSizeHint(e.sizeHint())
+                self.tasks_list.addItem(item)
+                self.tasks_list.setItemWidget(item, e)
+
+            # Собственно добавление задачи в data
+            data["tasks"].append(dict(
+                title=add_task_message_box.task_text.text(), date=add_task_message_box.task_date.text(),
+                done=False, img_id=1
+            ))
+
+    def update_tasks(self):
+        """
+        Обновляет список задач, подгружая их из data.
+        :return:
+        """
+        for task in data["tasks"]:
+            # Код ниже был скопирован из add_task
+            task_finded = False
+            for i in range(0, self.tasks_list.count()):
+                item = self.tasks_list.itemWidget(
+                    self.tasks_list.item(i))  # получаем виджет из возвращенного QlistWidgetItem
+
+                if item.get_data() == task["date"]:
+                    e = item
+                    task_finded = True
+                    break
+            if task_finded and self.tasks_list.count() != 0:
+                e.add_elem(QIcon("icon.png"), task["title"], False)
+            else:
+                e = TaskElemBox()
+                e.add_elem(QIcon("icon.png"), task["title"], False)
+                e.set_data(task["date"])
 
                 item = QListWidgetItem(self.tasks_list)
                 item.setSizeHint(e.sizeHint())
@@ -79,7 +164,7 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
 
     def add_note(self):
         """
-        Добавляет заметку в список заметок.
+        Добавляет заметку в data.
         """
         add_note_dialog = AddNoteDialog()
         add_note_dialog.setModal(True)
@@ -124,8 +209,10 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
 
     def setup_schedule(self):
         """
-        Первоначальная настройка таблицы расписания
+        Первоначальная настройка таблицы расписания.
+        Очищает все таблицы, задаёт название столбиков
         """
+        self.tables.clear()  # Очищаем список таблиц
         self.tables.append(self.schedule_table_1)
         self.tables.append(self.schedule_table_2)
         self.tables.append(self.schedule_table_3)
@@ -133,16 +220,17 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
         self.tables.append(self.schedule_table_5)
         self.tables.append(self.schedule_table_6)
         for table in self.tables:
-            table.setColumnCount(5)
-            table.setHorizontalHeaderLabels(
-                ["Пара", "Время", "Наименование предмета", "Преподаватель", "Кабинет"]
-            )
+            table.clear()  # Очищаем сами таблицы
+            horizontalheaderlabels = ["Пара", "Время", "Наименование предмета", "Преподаватель", "Кабинет"]
+            table.setColumnCount(horizontalheaderlabels.__len__())  # Всего 5 столбиков
+            table.setHorizontalHeaderLabels(horizontalheaderlabels)
             table.resizeColumnsToContents()
         self.update_schedule()
 
     def update_schedule(self):
         """
-        Обновление таблицы расписания
+        Обновление таблицы расписания.
+        Заполняет таблицу данными из data
         """
         num_of_days = len(days)  # Количество дней в неделе
         for day in range(num_of_days):
