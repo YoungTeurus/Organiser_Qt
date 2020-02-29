@@ -1,4 +1,5 @@
 import sys  # sys нужен для передачи argv в QApplication
+import json
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QTableWidgetItem
@@ -7,7 +8,7 @@ import organaiser_test2
 from Dialogs import AddTaskDialog, QDialog, AddNoteDialog, EditNoteDialog
 from Task_List import TaskElemBox, QListWidgetItem
 
-data = {
+data2 = {
     "notes": [
         {
             "title": "My title",
@@ -83,22 +84,36 @@ data = {
         }
     ]
 }
+
+data = {}
+
 days = ("Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота")
 
+
+def load_data_from_json(file_name, dat):
+    with open(file_name, "r") as read_file:
+        dat = json.load(read_file)
 
 class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
     tables = []
 
     def __init__(self):
         super().__init__()
+        # Дизайн модели и связывание событий
         self.setupUi(self)  # Это нужно для инициализации нашего дизайна
         self.add_task_button.clicked.connect(self.add_task)
         self.add_note_button.clicked.connect(self.add_note)
         self.notes_list.doubleClicked.connect(self.edit_note)
-        self.update_notes()  # Обновляем список заметок (загружаем начальный вид)
-        self.setup_schedule()  # Задаём начальный вид расписанию
-        self.update_tasks()  # Обновляем список задач (загружаем начальный вид)
+
+        # Синхронизация и первоначальная загрузка
+        self.sync_all()  # Первоначальная синхронизация
+        self.exit_action.triggered.connect(self.close)  # Пункт меню "Выход" заканчивает выполнение приложения
+
+        # Временный дебаг:
+        self.delete_task_button.setText("Выписать в коннсоль все задачи")
         self.delete_task_button.clicked.connect(lambda: print(data["tasks"]))
+        self.sync_action.triggered.connect(self.sync_all)  # Пунет меню "Синхронизировать" записывает data в файл
+        # Всё временное лучше вставлять выше.
 
     def add_task(self):
         """
@@ -137,8 +152,9 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
     def update_tasks(self):
         """
         Обновляет список задач, подгружая их из data.
-        :return:
+        В текущей реализации очищает весь список перед загрузкой.
         """
+        self.tasks_list.clear()
         for task in data["tasks"]:
             # Код ниже был скопирован из add_task
             task_finded = False
@@ -251,6 +267,29 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
                 blank_labels.append("")
             current_table.setVerticalHeaderLabels(blank_labels)
             current_table.resizeColumnsToContents()
+
+    def sync_all(self):
+        """
+        Функция, синхронизирующая все данные с сервером.
+        В данной реализации загружает все данные из файла.
+        """
+        # with open("data.json", "w") as write_file:
+        #    json.dump(data, write_file, indent=4)
+
+        # Проверка на открытие
+        with open("data.json", "r") as read_file:
+            global data
+            data = json.load(read_file)
+        self.update_notes()  # Обновляем список заметок (загружаем начальный вид)
+        self.setup_schedule()  # Задаём начальный вид расписанию
+        self.update_tasks()
+
+    def close(self):
+        """
+        Заготовка для реализации синхронизации данных перед выходом.
+        """
+        pass  # Заменить на синхронизацию
+        super().close()
 
 
 def main():
