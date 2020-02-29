@@ -7,6 +7,7 @@ https://github.com/YoungTeurus/Organiser_Qt
 import sys  # sys нужен для передачи argv в QApplication
 import json
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import QDate
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QTableWidgetItem
 
@@ -98,6 +99,7 @@ days = ("Понедельник", "Вторник", "Среда", "Четвер�
 
 class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
     tables = []  # Список таблиц для расписания
+    date_for_task = QDate()
 
     def __init__(self):
         super().__init__()
@@ -106,6 +108,8 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
         self.add_task_button.clicked.connect(self.add_task)
         self.add_note_button.clicked.connect(self.add_note)
         self.notes_list.doubleClicked.connect(self.edit_note)
+        self.sync_action.triggered.connect(self.sync_up)  # Пунет меню "Синхронизировать" записывает data в файл
+        self.calendarWidget.selectionChanged.connect(self.set_date_for_task)
 
         # Синхронизация и первоначальная загрузка
         self.sync_down()  # Первоначальная синхронизация с сервера
@@ -114,7 +118,6 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
         # Временный дебаг:
         self.delete_task_button.setText("Выписать в коннсоль все задачи")
         self.delete_task_button.clicked.connect(lambda: print(data["tasks"]))
-        self.sync_action.triggered.connect(self.sync_up)  # Пунет меню "Синхронизировать" записывает data в файл
         # Всё временное лучше вставлять выше.
 
     def add_task(self):
@@ -123,6 +126,7 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
         """
         add_task_message_box = AddTaskDialog()
         add_task_message_box.setModal(True)
+        add_task_message_box.task_date.setDate(self.date_for_task)  # Установка начального значения даты
         if add_task_message_box.exec() == QDialog.Accepted:
             task_finded = False
             for i in range(0, self.tasks_list.count()):
@@ -290,6 +294,12 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
         """
         with open("data.json", "w") as write_file:
             json.dump(data, write_file, indent=4)
+
+    def set_date_for_task(self):
+        """
+        Устанавливает дату по умолчанию (то есть, она будет выбрана сразу же) для задачи.
+        """
+        self.date_for_task = self.calendarWidget.selectedDate()
 
     def close(self):
         """
