@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Users\s_aza\PycharmProjects\Organiser_Qt\organaiser_test.ui'
+# Form implementation generated from reading ui file 'C:\Work\Organiser_Qt\organaiser_test.ui'
 #
 # Created by: PyQt5 UI code generator 5.14.1
 #
@@ -30,14 +30,9 @@ class Ui_MainWindow(object):
         self.label.setWordWrap(False)
         self.label.setObjectName("label")
         self.verticalLayout.addWidget(self.label)
-        self.task_list = QtWidgets.QListView(self.centralwidget)
-        font = QtGui.QFont()
-        font.setFamily("Perpetua")
-        font.setPointSize(12)
-        self.task_list.setFont(font)
-        self.task_list.setProperty("checkable", True)
-        self.task_list.setObjectName("task_list")
-        self.verticalLayout.addWidget(self.task_list)
+        self.tasks_list = QtWidgets.QListWidget(self.centralwidget)
+        self.tasks_list.setObjectName("tasks_list")
+        self.verticalLayout.addWidget(self.tasks_list)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.add_task_button = QtWidgets.QPushButton(self.centralwidget)
