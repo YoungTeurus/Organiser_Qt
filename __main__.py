@@ -1,3 +1,9 @@
+"""
+Программа "Органайзер для студента".
+Подготовила команда "BOLT" специально для весеннего Хакатона 2020.
+
+https://github.com/YoungTeurus/Organiser_Qt
+"""
 import sys  # sys нужен для передачи argv в QApplication
 import json
 from PyQt5 import QtWidgets
@@ -8,7 +14,7 @@ import organaiser_test2
 from Dialogs import AddTaskDialog, QDialog, AddNoteDialog, EditNoteDialog
 from Task_List import TaskElemBox, QListWidgetItem
 
-data2 = {
+"""data = {
     "notes": [
         {
             "title": "My title",
@@ -83,19 +89,15 @@ data2 = {
             "img_id": 2
         }
     ]
-}
+}"""
 
 data = {}
 
 days = ("Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота")
 
 
-def load_data_from_json(file_name, dat):
-    with open(file_name, "r") as read_file:
-        dat = json.load(read_file)
-
 class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
-    tables = []
+    tables = []  # Список таблиц для расписания
 
     def __init__(self):
         super().__init__()
@@ -106,13 +108,13 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
         self.notes_list.doubleClicked.connect(self.edit_note)
 
         # Синхронизация и первоначальная загрузка
-        self.sync_all()  # Первоначальная синхронизация
+        self.sync_down()  # Первоначальная синхронизация с сервера
         self.exit_action.triggered.connect(self.close)  # Пункт меню "Выход" заканчивает выполнение приложения
 
         # Временный дебаг:
         self.delete_task_button.setText("Выписать в коннсоль все задачи")
         self.delete_task_button.clicked.connect(lambda: print(data["tasks"]))
-        self.sync_action.triggered.connect(self.sync_all)  # Пунет меню "Синхронизировать" записывает data в файл
+        self.sync_action.triggered.connect(self.sync_up)  # Пунет меню "Синхронизировать" записывает data в файл
         # Всё временное лучше вставлять выше.
 
     def add_task(self):
@@ -268,21 +270,26 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
             current_table.setVerticalHeaderLabels(blank_labels)
             current_table.resizeColumnsToContents()
 
-    def sync_all(self):
+    def sync_down(self):
         """
-        Функция, синхронизирующая все данные с сервером.
-        В данной реализации загружает все данные из файла.
+        Загрузка информации с сервера.
+        В данной реализации - из файла.
         """
-        # with open("data.json", "w") as write_file:
-        #    json.dump(data, write_file, indent=4)
-
-        # Проверка на открытие
         with open("data.json", "r") as read_file:
             global data
             data = json.load(read_file)
         self.update_notes()  # Обновляем список заметок (загружаем начальный вид)
         self.setup_schedule()  # Задаём начальный вид расписанию
         self.update_tasks()
+
+    @staticmethod
+    def sync_up():
+        """
+        Выгрузка информации на сервер.
+        В данной реализации - в файл.
+        """
+        with open("data.json", "w") as write_file:
+            json.dump(data, write_file, indent=4)
 
     def close(self):
         """
