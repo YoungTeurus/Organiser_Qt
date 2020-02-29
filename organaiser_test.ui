@@ -168,7 +168,7 @@
          </layout>
         </item>
         <item>
-         <widget class="QListView" name="notes_list"/>
+         <widget class="QListWidget" name="notes_list"/>
         </item>
        </layout>
       </item>

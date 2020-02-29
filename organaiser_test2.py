@@ -96,7 +96,7 @@ class Ui_MainWindow(object):
         self.add_note_button.setObjectName("add_note_button")
         self.horizontalLayout_2.addWidget(self.add_note_button)
         self.verticalLayout_4.addLayout(self.horizontalLayout_2)
-        self.notes_list = QtWidgets.QListView(self.centralwidget)
+        self.notes_list = QtWidgets.QListWidget(self.centralwidget)
         self.notes_list.setObjectName("notes_list")
         self.verticalLayout_4.addWidget(self.notes_list)
         self.verticalLayout_3.addLayout(self.verticalLayout_4)
