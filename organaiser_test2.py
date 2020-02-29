@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-
+import PyQt5
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
@@ -71,7 +71,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.tab)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
         self.schedule_table_1 = QtWidgets.QTableWidget(self.tab)
-        self.schedule_table_1.setEnabled(False)
+        #self.schedule_table_1.setEnabled(False)
+        self.schedule_table_1.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         self.schedule_table_1.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
         self.schedule_table_1.setObjectName("schedule_table_1")
         self.schedule_table_1.setColumnCount(0)
@@ -83,7 +84,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.tab_2)
         self.verticalLayout_6.setObjectName("verticalLayout_6")
         self.schedule_table_2 = QtWidgets.QTableWidget(self.tab_2)
-        self.schedule_table_2.setEnabled(False)
+        self.schedule_table_2.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         self.schedule_table_2.setObjectName("schedule_table_2")
         self.schedule_table_2.setColumnCount(0)
         self.schedule_table_2.setRowCount(0)
@@ -94,7 +95,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_10 = QtWidgets.QVBoxLayout(self.tab_3)
         self.verticalLayout_10.setObjectName("verticalLayout_10")
         self.schedule_table_3 = QtWidgets.QTableWidget(self.tab_3)
-        self.schedule_table_3.setEnabled(False)
+        self.schedule_table_3.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         self.schedule_table_3.setObjectName("schedule_table_3")
         self.schedule_table_3.setColumnCount(0)
         self.schedule_table_3.setRowCount(0)
@@ -105,7 +106,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_9 = QtWidgets.QVBoxLayout(self.tab_4)
         self.verticalLayout_9.setObjectName("verticalLayout_9")
         self.schedule_table_4 = QtWidgets.QTableWidget(self.tab_4)
-        self.schedule_table_4.setEnabled(False)
+        self.schedule_table_4.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         self.schedule_table_4.setObjectName("schedule_table_4")
         self.schedule_table_4.setColumnCount(0)
         self.schedule_table_4.setRowCount(0)
@@ -116,7 +117,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_8 = QtWidgets.QVBoxLayout(self.tab_5)
         self.verticalLayout_8.setObjectName("verticalLayout_8")
         self.schedule_table_5 = QtWidgets.QTableWidget(self.tab_5)
-        self.schedule_table_5.setEnabled(False)
+        self.schedule_table_5.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         self.schedule_table_5.setObjectName("schedule_table_5")
         self.schedule_table_5.setColumnCount(0)
         self.schedule_table_5.setRowCount(0)
@@ -127,7 +128,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_7 = QtWidgets.QVBoxLayout(self.tab_6)
         self.verticalLayout_7.setObjectName("verticalLayout_7")
         self.schedule_table_6 = QtWidgets.QTableWidget(self.tab_6)
-        self.schedule_table_6.setEnabled(False)
+        self.schedule_table_6.setEditTriggers(QtWidgets.QTableWidget.NoEditTriggers)
         self.schedule_table_6.setObjectName("schedule_table_6")
         self.schedule_table_6.setColumnCount(0)
         self.schedule_table_6.setRowCount(0)
