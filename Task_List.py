@@ -4,54 +4,53 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QListWidget, QListWidg
 
 IMAGE_SIZE = QSize(20, 20)
 
+
 class TaskElemBox(QWidget):
     def __init__(self, parent=None):
-
         super().__init__(parent)
         # обьявления виджетов
         self.all_box_layout = QVBoxLayout()
-        self.data_label = QLabel()
-        self.task_elemenst_list = QListWidget()
+        self.date_label = QLabel()
+        self.task_elements_list = QListWidget()
 
         # настройка виджетов
 
-        self.task_elemenst_list.setIconSize(IMAGE_SIZE)
-        self.task_elemenst_list.setMinimumHeight(120)
-        self.task_elemenst_list.setMaximumHeight(120)
+        self.task_elements_list.setIconSize(IMAGE_SIZE)
+        self.task_elements_list.setMinimumHeight(120)
+        self.task_elements_list.setMaximumHeight(120)
 
         # ставим их на свои места
-        self.all_box_layout.addWidget(self.data_label)
-        self.all_box_layout.addWidget(self.task_elemenst_list)
+        self.all_box_layout.addWidget(self.date_label)
+        self.all_box_layout.addWidget(self.task_elements_list)
         self.setLayout(self.all_box_layout)
         size = self.all_box_layout.sizeHint()
 
     def size_hint(self):
         pass
 
-    def set_data(self, data):
-        self.data_label.setText(data)
+    def set_date(self, date):
+        self.date_label.setText(date)
 
     def get_data(self):
-        return self.data_label.text()
+        return self.date_label.text()
 
     def add_elem(self, task_image, task_text, task_checked):
-        elem = Task_Elem()
+        elem = TaskElem()
         elem.set_task_check(task_checked)
         elem.set_text(task_text)
 
-        item = QListWidgetItem(self.task_elemenst_list)
+        item = QListWidgetItem(self.task_elements_list)
         item.setFlags(Qt.ItemIsDragEnabled)
         item.setIcon(task_image)
         item.setSizeHint(elem.sizeHint())
 
-        self.task_elemenst_list.addItem(item)
-        self.task_elemenst_list.setItemWidget(item, elem)
+        self.task_elements_list.addItem(item)
+        self.task_elements_list.setItemWidget(item, elem)
 
 
-class Task_Elem(QWidget):
+class TaskElem(QWidget):
     def __init__(self, parent=None):
-
-        super(Task_Elem, self).__init__(parent)
+        super(TaskElem, self).__init__(parent)
         # обьявления виджетов
         self.task_elem = QHBoxLayout()
         self.task_text = QLabel()

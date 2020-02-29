@@ -142,7 +142,7 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
             else:
                 e = TaskElemBox()
                 e.add_elem(QIcon("icon.png"), add_task_message_box.task_text.text(), False)
-                e.set_data(add_task_message_box.task_date.text())
+                e.set_date(add_task_message_box.task_date.text())
 
                 item = QListWidgetItem(self.tasks_list)
                 item.setSizeHint(e.sizeHint())
@@ -173,16 +173,19 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
                     task_finded = True
                     break
             if task_finded and self.tasks_list.count() != 0:
-                e.add_elem(QIcon("icon.png"), task["title"], False)
+                e.add_elem(QIcon("icon.png"), task["title"], task["done"])
             else:
                 e = TaskElemBox()
-                e.add_elem(QIcon("icon.png"), task["title"], False)
-                e.set_data(task["date"])
+                e.add_elem(QIcon("icon.png"), task["title"], task["done"])
+                e.set_date(task["date"])
+
 
                 item = QListWidgetItem(self.tasks_list)
                 item.setSizeHint(e.sizeHint())
                 self.tasks_list.addItem(item)
                 self.tasks_list.setItemWidget(item, e)
+            # Нужно как-то добавить связь события checked у "галочки" с функцией "поменять в data переменную "done"".
+            # a = e.task_elements_list.items
 
     def add_note(self):
         """
