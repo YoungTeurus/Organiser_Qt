@@ -6,11 +6,13 @@ https://github.com/YoungTeurus/Organiser_Qt
 """
 import sys  # sys нужен для передачи argv в QApplication
 import json
+from datetime import datetime as DT
+
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QDate
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QTableWidgetItem
-
+import PyQt5
 import organaiser_test2
 from Dialogs import AddTaskDialog, QDialog, AddNoteDialog, EditNoteDialog
 from Task_List import TaskElemBox, QListWidgetItem
@@ -78,16 +80,16 @@ from Task_List import TaskElemBox, QListWidgetItem
     },
     "tasks": [
         {
-            "title": "Rgr po VSEMU",
-            "date": "3.03.2020",
-            "done": False,
-            "img_id": 1
-        },
-        {
             "title": "Priyti na hackaton",
             "date": "28.02.2020",
             "done": True,
             "img_id": 2
+        },
+        {
+            "title": "Rgr po VSEMU",
+            "date": "3.03.2020",
+            "done": False,
+            "img_id": 1
         }
     ]
 }"""
@@ -129,9 +131,18 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
         add_task_message_box.task_date.setDate(self.date_for_task)  # Установка начального значения даты
         if add_task_message_box.exec() == QDialog.Accepted:
             task_finded = False
+
+            ind_oldest_item = 0
+            oldest_item = self.tasks_list.itemWidget(self.tasks_list.item(0))
             for i in range(0, self.tasks_list.count()):
                 item = self.tasks_list.itemWidget(
                     self.tasks_list.item(i))  # получаем виджет из возвращенного QlistWidgetItem
+                def toDate(str):
+                    return DT.strptime(str, '%d.%m.%Y')
+                if(toDate(oldest_item.get_data()) <= toDate(add_task_message_box.task_date.text()) \
+                        and toDate(oldest_item.get_data()) <= toDate(item.get_data())):
+                    ind_oldest_item = i
+                    oldest_item = item
 
                 if item.get_data() == add_task_message_box.task_date.text():
                     e = item
@@ -144,10 +155,11 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
                 e.add_elem(QIcon("icon.png"), add_task_message_box.task_text.text(), False)
                 e.set_date(add_task_message_box.task_date.text())
 
-                item = QListWidgetItem(self.tasks_list)
+                item = QListWidgetItem()
                 item.setSizeHint(e.sizeHint())
-                self.tasks_list.addItem(item)
+                self.tasks_list.insertItem(ind_oldest_item, item)
                 self.tasks_list.setItemWidget(item, e)
+            self.tasks_list.sortItems(True)
 
             # Собственно добавление задачи в data
             data["tasks"].append(dict(
@@ -186,6 +198,8 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
                 self.tasks_list.setItemWidget(item, e)
             # Нужно как-то добавить связь события checked у "галочки" с функцией "поменять в data переменную "done"".
             # a = e.task_elements_list.items
+            #a = e.task_elements_list.itemWidget(внутри или e.task_elements_list.item() или e.task_elements_list.indexAt())
+            # в а будет нужный элем от кот возьмем галочку дальше
 
     def add_note(self):
         """
@@ -268,6 +282,7 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
                 current_table.setItem(para, 1, QTableWidgetItem(cur_day_schedule[para]["time"]))
                 current_table.setItem(para, 2, QTableWidgetItem(cur_day_schedule[para]["name"]))
                 current_table.setItem(para, 3, QTableWidgetItem(cur_day_schedule[para]["teacher"]))
+                current_table.setItem(para, 4, QTableWidgetItem(cur_day_schedule[para]["cabinet"]))
                 current_table.setItem(para, 4, QTableWidgetItem(cur_day_schedule[para]["cabinet"]))
 
             # Код ниже нужен, чтобы избавиться от подписи строчек
