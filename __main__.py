@@ -1,6 +1,7 @@
 import sys  # sys нужен для передачи argv в QApplication
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QTableWidgetItem
 
 import organaiser_test2
 from Dialogs import AddTaskDialog, QDialog, AddNoteDialog, EditNoteDialog
@@ -19,19 +20,23 @@ data = {
     ],
     "schedule": {
         "Понедельник": [
-            {"number": 1, "name": "Математика", "type": "always", "teacher": "prepod1", "cabinet": "315"},
-            {"number": 2, "name": "Физика практика", "type": "odd", "teacher": "prepod2", "cabinet": "215"},
-            {"number": 2, "name": "Физика лекция", "type": "even", "teacher": "prepod2", "cabinet": "115"},
+            {"number": "1", "name": "Математика", "type": "always", "teacher": "prepod1", "cabinet": "315"},
+            {"number": "2", "name": "Физика практика", "type": "odd", "teacher": "prepod2", "cabinet": "215"},
+            {"number": "2", "name": "Физика лекция", "type": "even", "teacher": "prepod2", "cabinet": "115"},
         ],
         "Вторник": [],
         "Среда": [],
         "Четверг": [],
-        "Пятница": []
+        "Пятница": [],
+        "Суббота": []
     }
 }
+days = ("Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота")
 
 
 class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
+    tables = []
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)  # Это нужно для инициализации нашего дизайна
@@ -39,6 +44,7 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
         self.add_note_button.clicked.connect(self.add_note)
         self.notes_list.doubleClicked.connect(self.edit_note)
         self.update_notes()
+        self.setup_schedule()
 
     def add_task(self):
         """
@@ -102,8 +108,43 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
             return
         self.update_notes()
 
+    def setup_schedule(self):
+        self.tables.append(self.schedule_table_1)
+        self.tables.append(self.schedule_table_2)
+        self.tables.append(self.schedule_table_3)
+        self.tables.append(self.schedule_table_4)
+        self.tables.append(self.schedule_table_5)
+        self.tables.append(self.schedule_table_6)
+        for table in self.tables:
+            table.setColumnCount(5)
+            table.setHorizontalHeaderLabels(
+                ["Пара", "Время", "Наименование предмета", "Преподаватель", "Кабинет"]
+            )
+            table.resizeColumnsToContents()
+        self.update_schedule()
+
     def update_schedule(self):
-        pass
+        for day in range(0, 1):
+            current_table = self.tables[day]
+            current_day_schedule = data["schedule"][days[day]]
+            print("{}: {}".format(days[day], current_day_schedule))
+            # nomer_para = current_day_schedule[0]["number"]
+            # nomer_para_item = QTableWidgetItem(nomer_para)
+            # nazvanie = current_day_schedule[0]["name"]
+            num_of_par = len(current_day_schedule)
+            current_table.setRowCount(num_of_par)
+            for para in range(num_of_par):
+                current_table.setItem(para, 0, QTableWidgetItem(current_day_schedule[para]["number"]))
+                current_table.setItem(para, 2, QTableWidgetItem(current_day_schedule[para]["name"]))
+                current_table.setItem(para, 3, QTableWidgetItem(current_day_schedule[para]["teacher"]))
+                current_table.setItem(para, 4, QTableWidgetItem(current_day_schedule[para]["cabinet"]))
+
+            # Код ниже нужен, чтобы избавиться от подписи строчек
+            blank_labels = []
+            for i in range(num_of_par):
+                blank_labels.append("")
+            current_table.setVerticalHeaderLabels(blank_labels)
+            current_table.resizeColumnsToContents()
 
 
 def main():
