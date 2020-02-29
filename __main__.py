@@ -20,9 +20,12 @@ data = {
     ],
     "schedule": {
         "Понедельник": [
-            {"number": "1", "name": "Математика", "type": "always", "teacher": "prepod1", "cabinet": "315"},
-            {"number": "2", "name": "Физика практика", "type": "odd", "teacher": "prepod2", "cabinet": "215"},
-            {"number": "2", "name": "Физика лекция", "type": "even", "teacher": "prepod2", "cabinet": "115"},
+            {"number": "1", "time": "8.00-9.35", "name": "Математика", "type": "always", "teacher": "prepod1",
+             "cabinet": "315"},
+            {"number": "2", "time": "9.45-11.20", "name": "Физика практика", "type": "odd", "teacher": "prepod2",
+             "cabinet": "215"},
+            {"number": "2", "time": "9.45-11.20", "name": "Физика лекция", "type": "even", "teacher": "prepod2",
+             "cabinet": "115"},
         ],
         "Вторник": [],
         "Среда": [],
@@ -52,16 +55,27 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
         """
         add_task_message_box = AddTaskDialog()
         add_task_message_box.setModal(True)
+        if (add_task_message_box.exec() == QDialog.Accepted):
+            task_finded = False
+            for i in range(0, self.tasks_list.count()):
+                item = self.tasks_list.itemWidget(
+                    self.tasks_list.item(i))  # получаем виджет из возвращенного QlistWidgetItem
 
-        if add_task_message_box.exec() == QDialog.Accepted:
-            e = TaskElemBox()
-            e.set_data(add_task_message_box.task_data.text())
-            e.add_elem(QIcon("icon.png"), add_task_message_box.task_text.text(), True)
+                if item.get_data() == add_task_message_box.task_data.text():
+                    e = item
+                    task_finded = True
+                    break
+            if task_finded and self.tasks_list.count() != 0:
+                e.add_elem(QIcon("icon.png"), add_task_message_box.task_text.text(), False)
+            else:
+                e = TaskElemBox()
+                e.add_elem(QIcon("icon.png"), add_task_message_box.task_text.text(), False)
+                e.set_data(add_task_message_box.task_data.text())
 
-            item = QListWidgetItem(self.tasks_list)
-            item.setSizeHint(e.sizeHint())
-            self.tasks_list.addItem(item)
-            self.tasks_list.setItemWidget(item, e)
+                item = QListWidgetItem(self.tasks_list)
+                item.setSizeHint(e.sizeHint())
+                self.tasks_list.addItem(item)
+                self.tasks_list.setItemWidget(item, e)
 
     def add_note(self):
         """
@@ -109,6 +123,9 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
         self.update_notes()
 
     def setup_schedule(self):
+        """
+        Первоначальная настройка таблицы расписания
+        """
         self.tables.append(self.schedule_table_1)
         self.tables.append(self.schedule_table_2)
         self.tables.append(self.schedule_table_3)
@@ -124,20 +141,21 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
         self.update_schedule()
 
     def update_schedule(self):
-        for day in range(0, 1):
-            current_table = self.tables[day]
-            current_day_schedule = data["schedule"][days[day]]
-            print("{}: {}".format(days[day], current_day_schedule))
-            # nomer_para = current_day_schedule[0]["number"]
-            # nomer_para_item = QTableWidgetItem(nomer_para)
-            # nazvanie = current_day_schedule[0]["name"]
-            num_of_par = len(current_day_schedule)
-            current_table.setRowCount(num_of_par)
-            for para in range(num_of_par):
-                current_table.setItem(para, 0, QTableWidgetItem(current_day_schedule[para]["number"]))
-                current_table.setItem(para, 2, QTableWidgetItem(current_day_schedule[para]["name"]))
-                current_table.setItem(para, 3, QTableWidgetItem(current_day_schedule[para]["teacher"]))
-                current_table.setItem(para, 4, QTableWidgetItem(current_day_schedule[para]["cabinet"]))
+        """
+        Обновление таблицы расписания
+        """
+        num_of_days = len(days)  # Количество дней в неделе
+        for day in range(num_of_days):
+            current_table = self.tables[day]  # Текущая таблица
+            cur_day_schedule = data["schedule"][days[day]]  # Текущая "база данных" таблицы
+            num_of_par = len(cur_day_schedule)  # Количество пар
+            current_table.setRowCount(num_of_par)  # Устанавливаем количество строк
+            for para in range(num_of_par):  # Заполняем таблицу
+                current_table.setItem(para, 0, QTableWidgetItem(cur_day_schedule[para]["number"]))
+                current_table.setItem(para, 1, QTableWidgetItem(cur_day_schedule[para]["time"]))
+                current_table.setItem(para, 2, QTableWidgetItem(cur_day_schedule[para]["name"]))
+                current_table.setItem(para, 3, QTableWidgetItem(cur_day_schedule[para]["teacher"]))
+                current_table.setItem(para, 4, QTableWidgetItem(cur_day_schedule[para]["cabinet"]))
 
             # Код ниже нужен, чтобы избавиться от подписи строчек
             blank_labels = []
