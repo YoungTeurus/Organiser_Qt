@@ -1,72 +1,46 @@
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5 import *
-from PyQt5.QtGui import *
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QListWidget, QListWidgetItem, QHBoxLayout, QGraphicsView
+from PyQt5.QtWidgets import QCheckBox
+from PyQt5.QtCore import QSize, Qt
 
 IMAGE_SIZE = QSize(20, 20)
 
-class Task_Elem_Box(QWidget):
-    def __init__(self, parent=None):
 
+class TaskElemBox(QWidget):
+    def __init__(self, parent=None):
         super().__init__(parent)
         # обьявления виджетов
-        #self.all_box_layout = QSizePolicy()
         self.all_box_layout = QVBoxLayout()
         self.data_label = QLabel()
-        self.task_elemenst_list = QListWidget()
+        self.task_element_list = QListWidget()
 
         # настройка виджетов
 
-        self.task_elemenst_list.setIconSize(IMAGE_SIZE)
-        #self.task_elemenst_list.setMinimumSize(278, 30)
-        #self.task_elemenst_list.setMaximumSize(500, 30)
-        print(self.task_elemenst_list.sizePolicy().horizontalStretch())
-        print(self.data_label.sizeHint().height())
-        print(self.task_elemenst_list.size().height())
-        print(self.all_box_layout.sizeHint().height())
-
+        self.task_element_list.setIconSize(IMAGE_SIZE)
+        self.task_element_list.setMinimumHeight(40)
 
         # ставим их на свои места
         self.all_box_layout.addWidget(self.data_label)
-        self.all_box_layout.addWidget(self.task_elemenst_list)
-        #print(self.task_elemenst_list.sizeHint().height())
+        self.all_box_layout.addWidget(self.task_element_list)
         self.setLayout(self.all_box_layout)
-        size = self.all_box_layout.sizeHint()
-        #print(size.height(), size.width())
-
-    def size_hint(self):
-        pass
 
     def set_data(self, data):
         self.data_label.setText(data)
-
-    def get_data(self):
-        return self.data_label.text()
 
     def add_elem(self, task_image, task_text, task_checked):
         elem = Task_Elem()
         elem.set_task_check(task_checked)
         elem.set_text(task_text)
 
-        #if ((count := self.task_elemenst_list.count()) > 0):
-            #self.task_elemenst_list.setMinimumHeight(self.task_elemenst_list.size().height() + elem.sizeHint().height())
-            #self.task_elemenst_list.setMaximumHeight(self.task_elemenst_list.size().height() + elem.sizeHint().height())
-            #self.all_box_layout.
-         #   print(count)
-        item = QListWidgetItem(self.task_elemenst_list)
+        item = QListWidgetItem(self.task_element_list)
         item.setFlags(Qt.ItemIsDragEnabled)
         item.setIcon(task_image)
         item.setSizeHint(elem.sizeHint())
-
-
-
-        self.task_elemenst_list.addItem(item)
-        self.task_elemenst_list.setItemWidget(item, elem)
+        self.task_element_list.addItem(item)
+        self.task_element_list.setItemWidget(item, elem)
 
 
 class Task_Elem(QWidget):
     def __init__(self, parent=None):
-
         super(Task_Elem, self).__init__(parent)
         # обьявления виджетов
         self.task_elem = QHBoxLayout()
