@@ -137,11 +137,14 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
             for i in range(0, self.tasks_list.count()):
                 item = self.tasks_list.itemWidget(
                     self.tasks_list.item(i))  # получаем виджет из возвращенного QlistWidgetItem
+                print(i, oldest_item.get_data(), add_task_message_box.task_date.text(), item.get_data())
                 def toDate(str):
                     return DT.strptime(str, '%d.%m.%Y')
+                # в oldest_item храним задачу, после которой вставляем
                 if(toDate(oldest_item.get_data()) <= toDate(add_task_message_box.task_date.text()) \
-                        and toDate(oldest_item.get_data()) <= toDate(item.get_data())):
-                    ind_oldest_item = i
+                        and toDate(oldest_item.get_data()) <= toDate(item.get_data()) \
+                        and toDate(item.get_data()) <= toDate(add_task_message_box.task_date.text())):
+                    ind_oldest_item = i + 1
                     oldest_item = item
 
                 if item.get_data() == add_task_message_box.task_date.text():
@@ -157,6 +160,7 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
 
                 item = QListWidgetItem()
                 item.setSizeHint(e.sizeHint())
+                print("Вставляю в ", ind_oldest_item, oldest_item.get_data())
                 self.tasks_list.insertItem(ind_oldest_item, item)
                 self.tasks_list.setItemWidget(item, e)
             self.tasks_list.sortItems(True)
