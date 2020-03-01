@@ -137,7 +137,6 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
             for i in range(0, self.tasks_list.count()):
                 item = self.tasks_list.itemWidget(
                     self.tasks_list.item(i))  # получаем виджет из возвращенного QlistWidgetItem
-                print(i, oldest_item.get_data(), add_task_message_box.task_date.text(), item.get_data())
                 def toDate(str):
                     return DT.strptime(str, '%d.%m.%Y')
                 # в oldest_item храним задачу, после которой вставляем
@@ -151,6 +150,7 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
                     e = item
                     task_finded = True
                     break
+            # если уже создана коробка с нужной датой, добавим к ней, иначе делаем новую
             if task_finded and self.tasks_list.count() != 0:
                 e.add_elem(QIcon("icon.png"), add_task_message_box.task_text.text(), False)
             else:
@@ -160,10 +160,10 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
 
                 item = QListWidgetItem()
                 item.setSizeHint(e.sizeHint())
-                print("Вставляю в ", ind_oldest_item, oldest_item.get_data())
                 self.tasks_list.insertItem(ind_oldest_item, item)
                 self.tasks_list.setItemWidget(item, e)
             self.tasks_list.sortItems(True)
+            print(self.tasks_list.count())
 
             # Собственно добавление задачи в data
             data["tasks"].append(dict(
