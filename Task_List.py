@@ -18,10 +18,10 @@ class TaskElemBox(QWidget):
         self.task_elements_list = QListWidget()
 
         # настройка виджетов
-        self.delete_button.setMaximumSize(25,23)
+        self.delete_button.setMaximumSize(25, 23)
         self.delete_button.setText("X")
         self.delete_button.clicked.connect(self.delete_this_task_box)
-        #self.delete_button.setVisible(False)
+        # self.delete_button.setVisible(False)
         self.task_elements_list.setIconSize(IMAGE_SIZE)
         self.task_elements_list.setMinimumHeight(125)
         self.task_elements_list.setMaximumHeight(125)
@@ -48,10 +48,30 @@ class TaskElemBox(QWidget):
     def get_data(self):
         return self.date_label.text()
 
-    def add_elem(self, task_image, task_text, task_checked):
+    def add_elem(self, task_image, task_text, task_checked, func_for_checkbox=None, func_for_deleting=None, ptr_to_data=None):
+        """
+        :param task_image:
+        :param task_text:
+        :param task_checked:
+        :param func_for_checkbox: Функция, которая должна выполняться, когда меняется положение checkbox.
+        :param ptr_to_data: Указатель на запись в data
+        :return:
+        """
         elem = TaskElem()
         elem.set_task_check(task_checked)
         elem.set_text(task_text)
+
+        # Ниже мой костыль
+        if func_for_checkbox is not None:
+            # Пытаемся привязаться к событию изменения состояния
+            elem.task_check_box.stateChanged.connect(lambda: func_for_checkbox(elem))
+        if ptr_to_data is not None:
+            # Пытаемся привязаться к элементу data
+            elem.ptr_to_data = ptr_to_data
+        if func_for_deleting is not None:
+            # Пытаемся привязаться к событию удаления
+            elem.func_to_del = func_for_deleting
+        # Всё, стоп костыль
 
         item = QListWidgetItem(self.task_elements_list)
         item.setFlags(Qt.ItemIsDragEnabled)
@@ -65,19 +85,32 @@ class TaskElemBox(QWidget):
         self.delete_task_box()
 
     def delete_task_box(self, task_box=None):
-        if(task_box == None):
+        if (task_box == None):
             task_box = self
         task_list = task_box.parent().parent()
         item = None
+        ind = 0
         for i in range(0, task_list.count()):
-            item = task_list.item(i) # получаем QlistWidgetItem
-            if(task_box.compare(task_list.itemWidget(item)) == True):
+            item = task_list.item(i)  # получаем QlistWidgetItem
+            if (task_box.compare(task_list.itemWidget(item)) == True):
+                ind = i
                 break
-        #task_list.removeItemWidget(item)
-        task_list.takeItem(i)
+        # task_list.removeItemWidget(item)
+
+        task_elem_list = task_list.itemWidget(item).task_elements_list # Список из задач
+        for i in range(0, task_elem_list.count()):
+            a = task_elem_list.itemWidget(task_elem_list.item(0))
+            a.delete_task(True)
+
+        task_list.takeItem(ind)
+
 
 
 class TaskElem(QWidget):
+    # Мой костыль
+    ptr_to_data = None  # Указатель на запись в data
+
+    # Всё, стоп костыль
     def __init__(self, parent=None):
         super(TaskElem, self).__init__(parent)
         # обьявления виджетов
@@ -90,10 +123,9 @@ class TaskElem(QWidget):
         self.delete_button.setText("X")
         self.delete_button.setMaximumSize(23, 20)
         self.delete_button.clicked.connect(self.delete_task)
-        #self.delete_button.setVisible(False)
+        # self.delete_button.setVisible(False)
         self.task_text.setMinimumSize(30, 14)
         self.task_text.setMaximumSize(199999, 14)
-
 
         self.all_task_box.setSizeConstraint(QLayout.SetMinimumSize)
 
@@ -117,15 +149,22 @@ class TaskElem(QWidget):
     def set_task_check(self, task_checked):
         self.task_check_box.setChecked(task_checked)
 
-    def delete_task(self):
+    func_to_del = None  # Хранимая функция для удаления записи
+
+    def delete_task(self, delete_with_box=False):
+        """
+        :param delete_with_box: Если True, то мы удаляем целую коробку, а не один элемент
+        :return:
+        """
         task_list = self.parent().parent()
         item = None
         for i in range(0, task_list.count()):
-            item = task_list.item(i) # получаем QlistWidgetItem
-            if(self.compare(task_list.itemWidget(item)) == True):
+            item = task_list.item(i)  # получаем QlistWidgetItem
+            if (self.compare(task_list.itemWidget(item)) == True):
                 break
         task_list.takeItem(i)
-        if(task_list.count() == 0): # если задач в текущем дне нет удаляем его
+        if task_list.count() == 0 and not delete_with_box:  # если задач в текущем дне нет удаляем его
             task_box = task_list.parent()
-            task_box.delete_task_box(task_box)
-        #task_list.removeItemWidget(item)
+            task_box.delete_task_box()
+        # task_list.removeItemWidget(item)
+        self.func_to_del(self)  # Вызов функции для удаления из data

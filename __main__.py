@@ -6,13 +6,12 @@ https://github.com/YoungTeurus/Organiser_Qt
 """
 import sys  # sys нужен для передачи argv в QApplication
 import json
-from datetime import datetime as DT
+from datetime import datetime as dt
 
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QDate
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QTableWidgetItem
-import PyQt5
 import organaiser_test2
 from Dialogs import AddTaskDialog, QDialog, AddNoteDialog, EditNoteDialog
 from Task_List import TaskElemBox, QListWidgetItem
@@ -137,12 +136,14 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
             for i in range(0, self.tasks_list.count()):
                 item = self.tasks_list.itemWidget(
                     self.tasks_list.item(i))  # получаем виджет из возвращенного QlistWidgetItem
-                def toDate(str):
-                    return DT.strptime(str, '%d.%m.%Y')
+
+                def to_date(str_date):
+                    return dt.strptime(str_date, '%d.%m.%Y')
+
                 # в oldest_item храним задачу, после которой вставляем
-                if(toDate(oldest_item.get_data()) <= toDate(add_task_message_box.task_date.text()) \
-                        and toDate(oldest_item.get_data()) <= toDate(item.get_data()) \
-                        and toDate(item.get_data()) <= toDate(add_task_message_box.task_date.text())):
+                if (to_date(oldest_item.get_data()) <= to_date(add_task_message_box.task_date.text())
+                        and to_date(oldest_item.get_data()) <= to_date(item.get_data()) <= to_date(
+                            add_task_message_box.task_date.text())):
                     ind_oldest_item = i + 1
                     oldest_item = item
 
@@ -150,12 +151,18 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
                     e = item
                     task_finded = True
                     break
+            # Собственно добавление задачи в data
+            a = dict(
+                title=add_task_message_box.task_text.text(), date=add_task_message_box.task_date.text(),
+                done=False, img_id=1
+            )  # Добавляемый словарь в словарь
+            data["tasks"].append(a)
             # если уже создана коробка с нужной датой, добавим к ней, иначе делаем новую
             if task_finded and self.tasks_list.count() != 0:
-                e.add_elem(QIcon("icon.png"), add_task_message_box.task_text.text(), False)
+                e.add_elem(QIcon("icon.png"), add_task_message_box.task_text.text(), False, self.set_checked_for_task, self.delete_task_from_data, a)
             else:
                 e = TaskElemBox()
-                e.add_elem(QIcon("icon.png"), add_task_message_box.task_text.text(), False)
+                e.add_elem(QIcon("icon.png"), add_task_message_box.task_text.text(), False, self.set_checked_for_task, self.delete_task_from_data, a)
                 e.set_date(add_task_message_box.task_date.text())
 
                 item = QListWidgetItem()
@@ -163,13 +170,6 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
                 self.tasks_list.insertItem(ind_oldest_item, item)
                 self.tasks_list.setItemWidget(item, e)
             self.tasks_list.sortItems(True)
-            print(self.tasks_list.count())
-
-            # Собственно добавление задачи в data
-            data["tasks"].append(dict(
-                title=add_task_message_box.task_text.text(), date=add_task_message_box.task_date.text(),
-                done=False, img_id=1
-            ))
 
     def update_tasks(self):
         """
@@ -189,12 +189,11 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
                     task_finded = True
                     break
             if task_finded and self.tasks_list.count() != 0:
-                e.add_elem(QIcon("icon.png"), task["title"], task["done"])
+                e.add_elem(QIcon("icon.png"), task["title"], task["done"], self.set_checked_for_task, self.delete_task_from_data, task)
             else:
                 e = TaskElemBox()
-                e.add_elem(QIcon("icon.png"), task["title"], task["done"])
+                e.add_elem(QIcon("icon.png"), task["title"], task["done"], self.set_checked_for_task, self.delete_task_from_data, task)
                 e.set_date(task["date"])
-
 
                 item = QListWidgetItem(self.tasks_list)
                 item.setSizeHint(e.sizeHint())
@@ -202,8 +201,20 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
                 self.tasks_list.setItemWidget(item, e)
             # Нужно как-то добавить связь события checked у "галочки" с функцией "поменять в data переменную "done"".
             # a = e.task_elements_list.items
-            #a = e.task_elements_list.itemWidget(внутри или e.task_elements_list.item() или e.task_elements_list.indexAt())
+            # a = e.task_elements_list.itemWidget(внутри или e.task_elements_list.item()
+            # или e.task_elements_list.indexAt())
             # в а будет нужный элем от кот возьмем галочку дальше
+            # a = e.task_elements_list  # Получили список задач
+            # print(a.indexAt(0))  # Получаем первый элемент(?!)
+            #print(a)
+            #print(a.task_check_box.isChecked())
+
+    def set_checked_for_task(self, obj):
+        obj.ptr_to_data["done"] = obj.task_check_box.isChecked()
+
+    def delete_task_from_data(self, obj):
+        global data
+        data["tasks"].remove(obj.ptr_to_data)
 
     def add_note(self):
         """
