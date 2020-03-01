@@ -21,7 +21,7 @@ class Ui_Dialog(object):
         self.formLayout.setObjectName("formLayout")
         self.task_date = QtWidgets.QDateEdit(Dialog)
         self.task_date.setMinimumSize(QtCore.QSize(70, 20))
-        self.task_date.setMaximumSize(QtCore.QSize(100, 20))
+        self.task_date.setMaximumSize(QtCore.QSize(110, 20))
         self.task_date.setObjectName("task_date")
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.task_date)
         self.label_text = QtWidgets.QLabel(Dialog)
