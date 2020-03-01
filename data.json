@@ -169,8 +169,8 @@
     },
     "tasks": [
         {
-            "title": "ТЕстовинка",
-            "date": "1.01.2020",
+            "title": "addsad",
+            "date": "01.01.2020",
             "done": false,
             "img_id": 1
         },
@@ -188,7 +188,7 @@
         },
         {
             "title": "Rgr po VSEMU",
-            "date": "3.03.2020",
+            "date": "03.03.2020",
             "done": false,
             "img_id": 1
         }
