@@ -8,7 +8,7 @@ import sys  # sys нужен для передачи argv в QApplication
 import json
 from datetime import datetime as dt
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtCore import QDate
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QTableWidgetItem
@@ -343,7 +343,128 @@ class ExampleOrganaiser(QtWidgets.QMainWindow, organaiser_test2.Ui_MainWindow):
 
 
 def main():
+    f = QtCore.QFile("MainStyle")
+    f.open(QtCore.QFile.ReadOnly, QtCore.QFile.Text)
+    st = str("""
+    QWidget#centralwidget{
+      background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #FFD240, stop:0.5 #d1f0d1, stop:1 #61B4CF)
+    }
+    
+    QListWidget#tasks_list{
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #FFD240, stop:0.5 #d1f0d1, stop:1 #61B4CF)
+    }
+    QListWidget QWidget QLabel#date_label{
+    padding: 1px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #223032, stop:0.5 #d1f0d1, stop:1 #d1f0d1);
+    border: 2px solid rgba(255,161,11,1);
+    border-radius: 5px;
+    }
+    QListWidget QWidget .QListWidget::item{
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #f0bd84, stop:0.5 #f0bd84, stop:1 #f0bd84);
+    border-radius: 13px;
+    border-bottom: 2px solid rgba(0,0,0,0.2);
+    border-right: 2px solid rgba(0,0,0,0.2);
+    }
+    QListWidget{
+    background-color: rgba(225, 247, 136, 1);
+    border-radius: 13px;
+   
+    }
+    
+    QLabel#label_2{
+     padding: 3px;
+      background-clip: content-box;
+      background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #daf2da, stop:1 #daf2da);;
+      border: 2px solid rgba(255,161,11,1);
+      
+      }
+    QLabel#label{
+      padding: 3px;
+      background-clip: content-box;
+      background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #daf2da, stop:1 #daf2da);;
+      border: 2px solid rgba(255,161,11,1);
+      }
+      QLabel#label_3{
+      padding: 3px;
+      background-clip: content-box;
+      background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #daf2da, stop:1 #daf2da);;
+      border: 2px solid rgba(255,161,11,1);
+      }
+  QTabBar::pane{
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+		stop: 0.0 #FF8E00, stop: 1.0 #FF8E00);
+  }
+  
+  QTabBar::tab {
+	padding: 15px 10px 3px 10px;
+	border: 1px solid rgba(255,161,11,0.49);
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+		stop: 0.0 #FF6C00, stop: 1.0 #FF6C00);
+	color: #000;
+}
+QTabBar::tab:!selected {
+	border-bottom: 2px solid qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #BF6D30, stop:1 #BF6D30);
+}
+QTabBar::tab:hover {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+		stop: 0 #fffaff, stop: 0.4 #fff0c0,
+		stop: 0.5 #FF9140, stop: 1.0 #BF6D30);
+	border: 1px solid #a4a063;
+}
+QTabBar::tab:selected {
+	background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+		stop: 0.0 #FF8E00, stop: 1.0 #FF8E00);
+	border: 1px solid #808090;
+	border-bottom: solid 0px;
+}
+
+QCalenderWidget QHeaderView
+{
+    background-color: rgb(224, 150, 65);
+}
+QCalenderWidget QtableView::section:vertical
+{
+    background-color: rgb(224, 150, 65);
+}
+QCalendarWidget QTableView
+{
+selection-background-color: yellow; /* цвет фона выбранного дня */
+selection-color: black; /* цвет текста выбранного дня */
+background-color: rgb(224, 150, 65);
+}
+
+ QHeaderView {
+    background-color: #FFAA40;
+    font-size:13px;
+}
+QHeaderView::section:horizontal {
+    color: #fff;
+    border-style: solid;
+    background-color: qlineargradient( x1: 0, y1: 0, x2: 0, y2: 1,
+                                        stop: 0 #f58925, stop: 1 #c9711e);
+ }
+ QHeaderView::section:vertical {
+    color: #fff;
+    border-style: solid;
+    background-color: #FFAA40;
+ }
+#schedule_table {
+    border: 2px solid #d99938;
+    border-top-color: #e3a03b;
+    border-radius: 4px;
+    background-color: rgba(224, 150, 65, 0.3);
+    gridline-color: #916a30;
+    selection-color: #000;
+    selection-background-color: #FF9140;
+    font-size:12px;
+ }
+ QTableView QTableCornerButton::section{ background-color: qlineargradient( x1: 0, y1: 0, x2: 0, y2: 1,
+                                        stop: 0 #f58925, stop: 1 #c9711e); }
+ """)
     app = QtWidgets.QApplication(sys.argv)  # Новый экземпляр QApplication
+    app.setStyleSheet(st)
     window = ExampleOrganaiser()  # Создаём объект класса ExampleApp
     window.show()  # Показываем окно
     app.exec_()  # и запускаем приложение

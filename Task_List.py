@@ -17,7 +17,9 @@ class TaskElemBox(QWidget):
         self.delete_button = QPushButton()
         self.task_elements_list = QListWidget()
 
+
         # настройка виджетов
+        self.date_label.setObjectName("date_label")
         self.delete_button.setMaximumSize(25, 23)
         self.delete_button.setText("X")
         self.delete_button.clicked.connect(self.delete_this_task_box)
@@ -118,6 +120,7 @@ class TaskElem(QWidget):
         self.task_text = QLabel()
         self.delete_button = QPushButton()
         self.task_check_box = QCheckBox()
+        self.setObjectName("task_elem")
 
         # настройка виджетов
         self.delete_button.setText("X")
@@ -126,6 +129,8 @@ class TaskElem(QWidget):
         # self.delete_button.setVisible(False)
         self.task_text.setMinimumSize(30, 14)
         self.task_text.setMaximumSize(199999, 14)
+
+
 
         self.all_task_box.setSizeConstraint(QLayout.SetMinimumSize)
 
